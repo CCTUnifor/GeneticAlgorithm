@@ -6,11 +6,13 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { MainComponent } from './main/main.component';
+import { GeracaoComponent } from './components/geracao/geracao.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainComponent,
+    GeracaoComponent,
   ],
   imports: [
     BrowserModule,
