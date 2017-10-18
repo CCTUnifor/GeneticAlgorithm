@@ -1,12 +1,27 @@
+import { Edge } from './edge';
 import { Node } from "./node";
 export class Cromossomo {
     private _cidades: Node[];
+    private _edges: Edge[];
     public get cidades(): Node[] {
         return this._cidades;
+    }
+    public get edges(): Edge[] {
+        return this._edges;
     }
 
     constructor(cidades: Node[]) {
         this._cidades = cidades;
+        this._edges = [];
+        this.carregarEdges(cidades);
+    }
+
+    private carregarEdges(cidades: Node[]) {
+        for (var i = 1; i < cidades.length; i++) {
+            let cidadeInicio = cidades[i - 1];
+            let cidadeFim = cidades[i];
+            this._edges.push(new Edge(cidadeInicio, cidadeFim));
+        }
     }
 
     private _fitness: number;
@@ -15,18 +30,10 @@ export class Cromossomo {
             return this._fitness;
 
         let fit = 0;
-        for (var i = 1; i < this._cidades.length; i++) {
-            fit += this.distanciaEntreDoisPontos(this._cidades[i - 1], this._cidades[i]);
+        for (var i = 0; i < this._edges.length; i++) {
+            fit += this._edges[i].tamanho;
         }
         this._fitness = fit;
         return fit;
     }
-
-    private distanciaEntreDoisPontos(inicio: Node, fim: Node): number {
-        let x = Math.pow(fim.coordenada.x - inicio.coordenada.x, 2);
-        let y = Math.pow(fim.coordenada.y - inicio.coordenada.y, 2);
-
-        return Math.sqrt(x + y);
-    }
-
 }

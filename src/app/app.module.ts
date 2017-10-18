@@ -1,3 +1,4 @@
+import { SorteadorService } from './services/sorteador.service';
 import { ArquivoEntradaService } from './services/arquivo-entrada.service';
 import { IOManagerService } from './services/gerenciador-io.service';
 import { BrowserModule } from '@angular/platform-browser';
@@ -18,7 +19,7 @@ import { GeracaoComponent } from './components/geracao/geracao.component';
     BrowserModule,
     FormsModule
   ],
-  providers: [IOManagerService, ArquivoEntradaService],
+  providers: [IOManagerService, ArquivoEntradaService, SorteadorService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

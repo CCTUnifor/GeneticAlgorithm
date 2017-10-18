@@ -1,7 +1,10 @@
+import { element } from 'protractor';
+import { SorteadorService } from './../services/sorteador.service';
 import { Component, Input, ViewChild, AfterViewInit } from '@angular/core';
 import { ArquivoEntradaService } from '../services/arquivo-entrada.service';
 import { Node } from "../entities/node";
 import { Edge } from '../entities/edge';
+import { Cromossomo } from '../entities/cromossomo';
 
 @Component({
   selector: 'app-main',
@@ -10,34 +13,66 @@ import { Edge } from '../entities/edge';
 })
 export class MainComponent {
   private arquivo: File;
-  private cidades: Node[];
-  private caminhos: Edge[];
-  private start: boolean;
+  private tamanhoPopulacao: number = 80;
 
-  constructor(private _arquivoEntrada: ArquivoEntradaService) { }
+  private cromossomos: Cromossomo[];
+  private melhorCromossomo: Cromossomo;
+  private tituloGeracao: string;
+
+  constructor(private _arquivoEntrada: ArquivoEntradaService, private _sorter: SorteadorService) { }
 
   async onInputChange(event) {
     let target = event.explicitOriginalTarget || event.srcElement;
     this.arquivo = target.files[0];
-    
-    await this._arquivoEntrada.carregarArquivo(this.arquivo);
-    await this.carregarCidades();
-    await this.carregarCaminhos();
 
-    this.start = true;
+    await this._arquivoEntrada.carregarArquivo(this.arquivo);
+    await this.popularCromossomos();
+    await this.escolherMelhorCromossomo();
+    this.tituloGeracao = "1ª Geração";
   }
-  private carregarCidades() {
-    let i = 0;
-    this.cidades = this._arquivoEntrada.coordenadas.map((c) => new Node(c, i++));
-    this.cidades[0].color = "blue";
-    this.cidades[this.cidades.length - 1].color = "blue";
-  }
-  private carregarCaminhos() {
-    var _caminhos: Array<Edge> = new Array<Edge>();
-    for (var i = 1; i < this.cidades.length; i++) {
-      var element = this.cidades[i];
-      _caminhos.push(new Edge(this.cidades[i - 1], this.cidades[i]));
+
+  private popularCromossomos() {
+    this.cromossomos = new Array<Cromossomo>()
+    for (var i = 0; i < this.tamanhoPopulacao; i++) {
+      let cidadesEmbaralhadas = this.embaralharCidades();
+      this.cromossomos.push(new Cromossomo(cidadesEmbaralhadas));
     }
-    this.caminhos = _caminhos;
+    console.log(this.cromossomos)
+  }
+
+  private escolherMelhorCromossomo() {
+    let menor: Cromossomo = this.cromossomos[0];
+    let segundoMenor: Cromossomo = this.cromossomos[1];
+    for (var i = 0; i < this.cromossomos.length; i++) {
+      var element = this.cromossomos[i];
+      if (element.fitness < menor.fitness)
+        menor = element;
+      if (element.fitness < segundoMenor.fitness)
+        segundoMenor = element;
+    }
+    this.melhorCromossomo = menor;
+  }
+
+  private embaralharCidades(): Array<Node> {
+    let cidadesEmbaralhadas: Array<Node> = new Array<Node>();
+    this.setandoCidadeInicial(cidadesEmbaralhadas);
+
+    this._sorter.resetArray();
+    for (var j = 1; j < this._arquivoEntrada.quantidadeDeCidades - 1; j++) {
+      let sorted = this._sorter.sort(28);
+      if (sorted != 0)
+        cidadesEmbaralhadas.push(this._arquivoEntrada.cidades[sorted]);
+    }
+
+    this.setandoCidadeFinal(cidadesEmbaralhadas);
+    return cidadesEmbaralhadas;
+  }
+
+  private setandoCidadeFinal(cidadesEmbaralhadas: Node[]) {
+    cidadesEmbaralhadas.push(this._arquivoEntrada.cidades[this._arquivoEntrada.cidades.length - 1]);
+  }
+
+  private setandoCidadeInicial(cidadesEmbaralhadas: Node[]) {
+    cidadesEmbaralhadas.push(this._arquivoEntrada.cidades[0]);
   }
 }

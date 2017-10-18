@@ -1,4 +1,6 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges, ViewChild, AfterViewInit } from '@angular/core';
+import { GlobalVariables } from './../../entities/global-variables';
+import { Cromossomo } from './../../entities/cromossomo';
+import { Component, OnInit, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { Edge } from '../../entities/edge';
 import { Node } from '../../entities/node';
 import { IDrawable } from '../../interfaces/drawable';
@@ -8,57 +10,55 @@ import { IDrawable } from '../../interfaces/drawable';
   templateUrl: './geracao.component.html',
   styleUrls: ['./geracao.component.css']
 })
-export class GeracaoComponent implements OnInit, OnChanges, AfterViewInit {
+export class GeracaoComponent {
   @ViewChild("myCanvas") myCanvas;
   private context: CanvasRenderingContext2D;
   private drawable: IDrawable;
 
   @Input()
-  private nodes: Node[];
+  private cromossomo: Cromossomo;
   @Input()
-  private edges: Edge[];
-  @Input()
-  private start: boolean;
+  private titulo: string;
 
-  constructor() {
+  private get fitnessLabel() {
+    return this.cromossomo ? `Fitness: ${this.cromossomo.fitness.toFixed(4)}` : '';
   }
-
-  ngAfterViewInit(): void {
-    let canvas = this.myCanvas.nativeElement;
-    this.context = canvas.getContext("2d");
-
-    this.drawable = new IDrawable(this.context);
-
-    // this.draw();
+  private get width() {
+    return GlobalVariables.canvasWidth;
   }
-
-  ngOnInit() {
+  private get height() {
+    return GlobalVariables.canvasHeight;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.start)
+    if (!!changes["cromossomo"] && this.cromossomo) {
+      let canvas = this.myCanvas.nativeElement as HTMLCanvasElement;
+      canvas.width = this.width;
+      canvas.height = this.height;
+
+      this.context = canvas.getContext("2d");
+      this.drawable = new IDrawable(this.context);
+
       this.draw();
-      
+    }
   }
 
   draw() {
-    requestAnimationFrame(() => {
-      this.draw();
-    });
-
+    this.context.clearRect(0, 0, this.width, this.height)
     this.drawCities();
     this.drawCaminhos();
   }
 
   drawCities() {
-    this.nodes.forEach(cidade => {
+    this.cromossomo.cidades.forEach(cidade => {
       this.drawable.drawNode(cidade);
     });
   }
 
   drawCaminhos() {
-    this.edges.forEach(caminho => {
+    for (var i = 0; i < this.cromossomo.edges.length; i++) {
+      let caminho = this.cromossomo.edges[i];
       this.drawable.drawEdge(caminho);
-    })
+    }
   }
 }
