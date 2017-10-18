@@ -1,8 +1,18 @@
-<span>Arquivo: </span>
-<input type="file" (change)="onInputChange($event)">
-<br>
-<br>
+<div class="main">
+    <div class="controle-entrada">
+        <span class="">Arquivo: </span>
+        <input type="file" (change)="onInputChange($event)">
+    </div>
+    <div class="controle-acoes">
+        <button [disabled]="!arquivo">Startar</button>
+        <button [disabled]="!arquivo">Pausar</button>
+        <button [disabled]="!arquivo">Parar</button>
+        <button [disabled]="!arquivo">Resetar</button>
+    </div>
+    <br>
+    <br>
 
-<div *ngIf="arquivo">
-    <app-geracao [titulo]="tituloGeracao" [cromossomo]="melhorCromossomo"></app-geracao>
+    <div *ngIf="arquivo">
+        <app-geracao [titulo]="tituloGeracao" [cromossomo]="melhorCromossomo"></app-geracao>
+    </div>
 </div>

@@ -1,0 +1,9 @@
+.controle-entrada {
+    padding: 10px;
+}
+
+.controle-acoes > button {
+    width: 80px;
+    padding: 3px;
+    margin: 0px 5px;
+}
