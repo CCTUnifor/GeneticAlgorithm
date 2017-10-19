@@ -1,0 +1,14 @@
+<div class="entrada-dados">
+  <div class="controle-entrada">
+    <div class="arquivo">
+      <span class="">Arquivo: </span>
+      <input type="file" (change)="onInputChange($event)">
+    </div>
+  </div>
+  <div class="controle-acoes">
+    <button [disabled]="!dados.arquivo" (click)="startar()">Startar</button>
+    <button [disabled]="!dados.arquivo">Pausar</button>
+    <button [disabled]="!dados.arquivo">Resetar</button>
+    <button [disabled]="!dados.arquivo">Limpar</button>
+  </div>
+</div>
