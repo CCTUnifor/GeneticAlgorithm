@@ -1,3 +1,4 @@
+import { RoletaService } from './services/roleta.service';
 import { AlgoritmoGeneticoService } from './services/algoritmo-genetico.service';
 import { ControleDeAcaoService } from './services/controle-de-acao.service';
 import { SorteadorService } from './services/sorteador.service';
@@ -23,7 +24,12 @@ import { EntradaDadosComponent } from './components/entrada-dados/entrada-dados.
     BrowserModule,
     FormsModule
   ],
-  providers: [IOManagerService, ArquivoEntradaService, SorteadorService, ControleDeAcaoService, AlgoritmoGeneticoService],
+  providers: [IOManagerService,
+    ArquivoEntradaService,
+    SorteadorService,
+    ControleDeAcaoService,
+    AlgoritmoGeneticoService,
+    RoletaService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

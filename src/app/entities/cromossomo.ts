@@ -3,7 +3,7 @@ import { Node } from "./node";
 export class Cromossomo {
     private _cidades: Node[];
     private _edges: Edge[];
-    public get cidades(): Node[] {
+    public get individuos(): Node[] {
         return this._cidades;
     }
     public get edges(): Edge[] {

@@ -8,10 +8,10 @@ export class SorteadorService {
     if (this.sorteados.length == range)
       return;
 
-    let sugestao = Math.ceil(Math.random() * range);
+    let sugestao = Math.ceil(Math.random() * range) - 1;
 
     while (this.sorteados.indexOf(sugestao) >= 0)
-      sugestao = Math.ceil(Math.random() * range);
+      sugestao = Math.ceil(Math.random() * range) - 1;
 
     this.sorteados.push(sugestao);
     return sugestao;

@@ -22,7 +22,11 @@ export class GeracaoComponent implements OnInit {
 
   private dados: EntradaDados;
 
-  private titulo: string;
+  private get titulo(): string {
+    return this.geracao && this.geracao + "ª Geração";
+  }
+
+  private geracao: number = 0;
 
   private get melhorCromossomoDaGeracao(): Cromossomo {
     return this._aG && this._aG.melhorCromossomo;
@@ -54,14 +58,19 @@ export class GeracaoComponent implements OnInit {
   private async startar(dados: EntradaDados) {
     this.dados = dados;
     await this._aG.rodarGeracao(dados);
-    this.titulo = "1ª Geração";
 
     this.renderizar();
+    while (this.geracao < this.dados.criterioParada * 100) {
+      this.geracao++;
+      this._aG.x();
+    }
   }
 
   renderizar(): void {
-    this.drawable = new IDrawable(this.context);
+    this.drawable = this.drawable || new IDrawable(this.context);
     this.draw();
+    requestAnimationFrame(() => this.renderizar());
+
   }
 
   limparCanvas() {
@@ -75,12 +84,16 @@ export class GeracaoComponent implements OnInit {
   }
 
   drawCities() {
-    this.melhorCromossomoDaGeracao.cidades.forEach(cidade => {
+    if (!this.melhorCromossomoDaGeracao)
+      return;
+    this.melhorCromossomoDaGeracao.individuos.forEach(cidade => {
       this.drawable.drawNode(cidade);
     });
   }
 
   drawCaminhos() {
+    if (!this.melhorCromossomoDaGeracao)
+      return;
     for (var i = 0; i < this.melhorCromossomoDaGeracao.edges.length; i++) {
       let caminho = this.melhorCromossomoDaGeracao.edges[i];
       this.drawable.drawEdge(caminho);
