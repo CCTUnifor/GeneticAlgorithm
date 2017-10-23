@@ -16,19 +16,17 @@ export class AlgoritmoGeneticoService {
         private _sorter: SorteadorService,
         private _roleta: RoletaService) { }
 
-    public async rodarGeracao(dados: EntradaDados) {
+    public async prepararEntradaDeDados(dados: EntradaDados) {
         this.dadosEntrada = dados;
         await this._arquivoEntrada.carregarArquivo(dados.arquivo);
         this.populacao = this.popularCromossomos();
     }
 
-    public async x() {
+    public gerarMelhorSolucaoDaGeracao() {
         let resultadoSelecaoNatural = this.selecaoNatural();
         this.crossover(resultadoSelecaoNatural);
 
         this.melhorCromossomo = this.pegarMelhorFitnes();
-        console.log(this.melhorCromossomo.fitness)
-
     }
 
     private popularCromossomos(): Array<Cromossomo> {

@@ -21,12 +21,13 @@ export class GeracaoComponent implements OnInit {
   private drawable: IDrawable;
 
   private dados: EntradaDados;
+  private geracao: number = 0;
+  private countSemMudar: number = 0;
+  private ultimoMelhorCromossomo: Cromossomo;
 
   private get titulo(): string {
     return this.geracao && this.geracao + "ª Geração";
   }
-
-  private geracao: number = 0;
 
   private get melhorCromossomoDaGeracao(): Cromossomo {
     return this._aG && this._aG.melhorCromossomo;
@@ -57,20 +58,40 @@ export class GeracaoComponent implements OnInit {
 
   private async startar(dados: EntradaDados) {
     this.dados = dados;
-    await this._aG.rodarGeracao(dados);
+    await this._aG.prepararEntradaDeDados(dados);
 
-    this.renderizar();
-    while (this.geracao < this.dados.criterioParada * 100) {
-      this.geracao++;
-      this._aG.x();
+    this.x();
+  }
+
+  private ehParaParar() {
+    if (!this.ultimoMelhorCromossomo)
+      this.ultimoMelhorCromossomo = this.melhorCromossomoDaGeracao;
+      
+    if (this.melhorCromossomoDaGeracao.fitness < this.ultimoMelhorCromossomo.fitness) {
+      this.ultimoMelhorCromossomo = this.melhorCromossomoDaGeracao;
+      this.countSemMudar = 0;
     }
+    else
+      this.countSemMudar++;
+    
+    return this.countSemMudar >= this.dados.criterioParada;
+  }
+
+  private async x() {
+    this.geracao++;
+    await this._aG.gerarMelhorSolucaoDaGeracao();
+    await this.renderizar();
+
+    console.log(this.geracao, this._aG.melhorCromossomo.fitness)
+    if (this.ehParaParar())
+      return;
+    setTimeout(() => this.x(), 1000);
   }
 
   renderizar(): void {
     this.drawable = this.drawable || new IDrawable(this.context);
     this.draw();
     requestAnimationFrame(() => this.renderizar());
-
   }
 
   limparCanvas() {

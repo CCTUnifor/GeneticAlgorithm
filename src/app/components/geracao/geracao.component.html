@@ -1,3 +1,9 @@
-{{titulo}} - {{fitnessLabel}}
+<div *ngIf="melhorCromossomoDaGeracao">
+    {{titulo}} - {{fitnessLabel}} || Geracoes sem mudar o melhor: {{countSemMudar}}
+</div>
 <br>
 <canvas #myCanvas id="tutorial"></canvas>
+
+<div *ngIf="countSemMudar == 40" class="finish">
+    Acabou!
+</div>
