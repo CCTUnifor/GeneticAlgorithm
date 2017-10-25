@@ -22,20 +22,31 @@ export class AlgoritmoGeneticoService {
         this.populacao = this.popularCromossomos();
     }
 
+    private popularCromossomos(): Array<Cromossomo> {
+        let populacao = new Array<Cromossomo>()
+        for (var i = 0; i < this.dadosEntrada.tamanhoPopulacao; i++) {
+            let cidadesEmbaralhadas = this.embaralharCidades();
+            let cromossomo = new Cromossomo(cidadesEmbaralhadas);
+            
+            populacao.push(cromossomo);
+        }
+        return populacao;
+    }
+
+    private verificarCromossomo(cromossomo: Cromossomo) {
+        let ordinalNamers = cromossomo.individuos.map(x => x.ordinalName);
+        for (var i = 0; i < cromossomo.individuos.length; i++) {
+            if (ordinalNamers.indexOf(i) < 0)
+                debugger;
+        }
+    }
+
     public gerarMelhorSolucaoDaGeracao() {
         let resultadoSelecaoNatural = this.selecaoNatural();
         this.crossover(resultadoSelecaoNatural);
 
         this.melhorCromossomo = this.pegarMelhorFitnes();
-    }
-
-    private popularCromossomos(): Array<Cromossomo> {
-        let populacao = new Array<Cromossomo>()
-        for (var i = 0; i < this.dadosEntrada.tamanhoPopulacao; i++) {
-            let cidadesEmbaralhadas = this.embaralharCidades();
-            populacao.push(new Cromossomo(cidadesEmbaralhadas));
-        }
-        return populacao;
+        this.verificarCromossomo(this.melhorCromossomo);
     }
 
     private embaralharCidades(): Array<Node> {
@@ -47,14 +58,6 @@ export class AlgoritmoGeneticoService {
             cidadesEmbaralhadas.push(this._arquivoEntrada.cidades[sorted]);
         }
         return cidadesEmbaralhadas;
-    }
-
-    private setandoCidadeFinal(cidadesEmbaralhadas: Node[]) {
-        cidadesEmbaralhadas.push(this._arquivoEntrada.cidades[this._arquivoEntrada.cidades.length - 1]);
-    }
-
-    private setandoCidadeInicial(cidadesEmbaralhadas: Node[]) {
-        cidadesEmbaralhadas.push(this._arquivoEntrada.cidades[0]);
     }
 
     private selecaoNatural(): Array<ResultadoSelecaoNatural> {
@@ -80,27 +83,29 @@ export class AlgoritmoGeneticoService {
                 continue;
 
             var tupla = tuplas[i];
-            let filhoUm = this.gerarFilho(tuplas, tupla);
+            let filhoUm = this.gerarFilho(tupla);
             if (filhoUm.fitness < tupla.filhoUm.fitness || tupla.filhoDois.fitness)
                 this.subistituir(filhoUm);
 
-            let filhoDois = this.gerarFilho(tuplas, tupla);
+            let filhoDois = this.gerarFilho(tupla);
             if (filhoDois.fitness < tupla.filhoDois.fitness || tupla.filhoDois.fitness)
                 this.subistituir(filhoDois);
         }
     }
 
-    private gerarFilho(tuplas, tupla) {
+    private gerarFilho(tupla: ResultadoSelecaoNatural) {
         let mask = this.gerarMascara();
         let nodes = this.gerarAhPartirDaMascara(tupla, mask);
-        this.completar(nodes, tuplas);
+        this.completar(nodes);
 
-        return new Cromossomo(nodes);
+        let cromossomo = new Cromossomo(nodes);
+        this.verificarCromossomo(cromossomo);
+        return cromossomo
     }
 
     private gerarMascara() {
         let mask = [];
-        for (var i = 0; i < this.dadosEntrada.tamanhoPopulacao; i++) {
+        for (var i = 0; i < this._arquivoEntrada.quantidadeDeCidades; i++) {
             this._sorter.resetArray();
             let random = this._sorter.sort(2);
             mask.push(random);
@@ -111,31 +116,42 @@ export class AlgoritmoGeneticoService {
     private gerarAhPartirDaMascara(tupla: ResultadoSelecaoNatural, mask: any[]) {
         let nodes: Node[] = [];
         for (var i = 0; i < this._arquivoEntrada.quantidadeDeCidades; i++) {
-            if (mask[i] == 0 && nodes.indexOf(tupla.filhoUm.individuos[i]) >= 0)
-                nodes.push(tupla.filhoDois.individuos[i]);
-            if (mask[i] == 0 && nodes.indexOf(tupla.filhoUm.individuos[i]) < 0)
-                nodes.push(tupla.filhoUm.individuos[i]);
+            let left = tupla.filhoUm.individuos[i];
+            let right = tupla.filhoDois.individuos[i];
 
-            if (mask[i] == 1 && nodes.indexOf(tupla.filhoDois.individuos[i]) >= 0)
-                nodes.push(tupla.filhoUm.individuos[i]);
-            if (mask[i] == 1 && nodes.indexOf(tupla.filhoDois.individuos[i]) < 0)
-                nodes.push(tupla.filhoDois.individuos[i]);
+            if (nodes.indexOf(left) > 0 && nodes.indexOf(right) > 0) {
+                nodes.push(undefined);
+                continue;
+            }
+
+            if (mask[i] == 0) {
+                if (nodes.indexOf(left) < 0)
+                    nodes.push(left);
+                else
+                    nodes.push(right);
+            }
+
+            if (mask[i] == 1) {
+                if (nodes.indexOf(right) < 0)
+                    nodes.push(right);
+                else
+                    nodes.push(left);
+            }
         }
         return nodes;
     }
 
-    private completar(nodes: Node[], tuplas: ResultadoSelecaoNatural[]) {
-        for (var i = 0; i < this._arquivoEntrada.quantidadeDeCidades; i++) {
+    private completar(nodes: Node[]) {
+        for (var i = 0; i < nodes.length; i++) {
             if (!nodes[i])
-                nodes[i] = this.primeiroQueNaoExiste(tuplas, nodes);
+                nodes[i] = this.primeiroQueNaoExiste(nodes);
         }
     }
 
-    private primeiroQueNaoExiste(tuplas: Array<ResultadoSelecaoNatural>, nodes: Node[]) {
-        let node = tuplas.map(x => x.filhoDois.individuos.concat(x.filhoUm.individuos)).reduce((a, b) => a.concat(b));
-        for (var i = 0; i < node.length; i++) {
-            if (nodes.indexOf(node[i]) < 0)
-                return node[i];
+    private primeiroQueNaoExiste(nodes: Node[]) {
+        for (var i = 0; i < this._arquivoEntrada.cidades.length; i++) {
+            if (nodes.indexOf(this._arquivoEntrada.cidades[i]) < 0)
+                return this._arquivoEntrada.cidades[i];
         }
     }
 

@@ -44,7 +44,8 @@ export class GeracaoComponent implements OnInit {
 
   constructor(private _controleAcaoService: ControleDeAcaoService,
     private _sorter: SorteadorService,
-    private _aG: AlgoritmoGeneticoService) {
+    private _aG: AlgoritmoGeneticoService,
+    private _entrada: ArquivoEntradaService) {
     this._controleAcaoService.handleStartarAplicacao.subscribe((dados) => this.startar(dados));
     this._controleAcaoService.handleLimparAplicacao.subscribe(() => this.limparCanvas());
   }
@@ -60,38 +61,38 @@ export class GeracaoComponent implements OnInit {
     this.dados = dados;
     await this._aG.prepararEntradaDeDados(dados);
 
-    this.x();
+    this.geracoes();
   }
 
   private ehParaParar() {
     if (!this.ultimoMelhorCromossomo)
       this.ultimoMelhorCromossomo = this.melhorCromossomoDaGeracao;
-      
+
     if (this.melhorCromossomoDaGeracao.fitness < this.ultimoMelhorCromossomo.fitness) {
       this.ultimoMelhorCromossomo = this.melhorCromossomoDaGeracao;
       this.countSemMudar = 0;
     }
     else
       this.countSemMudar++;
-    
+
     return this.countSemMudar >= this.dados.criterioParada;
   }
 
-  private async x() {
+  private async geracoes() {
     this.geracao++;
     await this._aG.gerarMelhorSolucaoDaGeracao();
     await this.renderizar();
 
-    console.log(this.geracao, this._aG.melhorCromossomo.fitness)
+    // console.log(this.geracao, this._aG.melhorCromossomo.fitness)
     if (this.ehParaParar())
       return;
-    setTimeout(() => this.x(), 1000);
+    setTimeout(() => this.geracoes(), 1000);
   }
 
   renderizar(): void {
     this.drawable = this.drawable || new IDrawable(this.context);
     this.draw();
-    requestAnimationFrame(() => this.renderizar());
+    // requestAnimationFrame(() => this.renderizar());
   }
 
   limparCanvas() {
@@ -107,7 +108,8 @@ export class GeracaoComponent implements OnInit {
   drawCities() {
     if (!this.melhorCromossomoDaGeracao)
       return;
-    this.melhorCromossomoDaGeracao.individuos.forEach(cidade => {
+
+    this._entrada.cidades.forEach(cidade => {
       this.drawable.drawNode(cidade);
     });
   }
