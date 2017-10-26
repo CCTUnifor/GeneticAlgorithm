@@ -1,3 +1,4 @@
+import { CromossomoSorterService } from './services/cromossomo-sorter.service';
 import { RoletaService } from './services/roleta.service';
 import { AlgoritmoGeneticoService } from './services/algoritmo-genetico.service';
 import { ControleDeAcaoService } from './services/controle-de-acao.service';
@@ -29,7 +30,8 @@ import { EntradaDadosComponent } from './components/entrada-dados/entrada-dados.
     SorteadorService,
     ControleDeAcaoService,
     AlgoritmoGeneticoService,
-    RoletaService],
+    RoletaService,
+    CromossomoSorterService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

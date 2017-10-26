@@ -1,3 +1,4 @@
+import { CromossomoSorterService } from './cromossomo-sorter.service';
 import { Cromossomo } from './../entities/cromossomo';
 import { RoletaService } from './roleta.service';
 import { Injectable } from '@angular/core';
@@ -11,10 +12,12 @@ export class AlgoritmoGeneticoService {
     public melhorCromossomo: Cromossomo;
     private dadosEntrada: EntradaDados;
     private populacao: Cromossomo[];
+    private cromossomoId: number = 1;
 
     constructor(private _arquivoEntrada: ArquivoEntradaService,
         private _sorter: SorteadorService,
-        private _roleta: RoletaService) { }
+        private _roleta: RoletaService,
+        private _cromossomoSorter: CromossomoSorterService) { }
 
     public async prepararEntradaDeDados(dados: EntradaDados) {
         this.dadosEntrada = dados;
@@ -26,8 +29,8 @@ export class AlgoritmoGeneticoService {
         let populacao = new Array<Cromossomo>()
         for (var i = 0; i < this.dadosEntrada.tamanhoPopulacao; i++) {
             let cidadesEmbaralhadas = this.embaralharCidades();
-            let cromossomo = new Cromossomo(cidadesEmbaralhadas);
-            
+            let cromossomo = new Cromossomo(this.cromossomoId++, cidadesEmbaralhadas);
+
             populacao.push(cromossomo);
         }
         return populacao;
@@ -43,10 +46,18 @@ export class AlgoritmoGeneticoService {
 
     public gerarMelhorSolucaoDaGeracao() {
         let resultadoSelecaoNatural = this.selecaoNatural();
-        this.crossover(resultadoSelecaoNatural);
+        let filhos = this.crossover(resultadoSelecaoNatural);
+        this.mutacao(filhos);
 
-        this.melhorCromossomo = this.pegarMelhorFitnes();
-        this.verificarCromossomo(this.melhorCromossomo);
+        filhos.forEach((filho) => {
+            this.populacao.push(filho);
+        });
+
+        this._cromossomoSorter.ordernar(this.populacao);
+        this.populacao = this.populacao.splice(0, this.dadosEntrada.tamanhoPopulacao);
+
+        this.melhorCromossomo = this.populacao[0];
+        // this.verificarCromossomo(this.melhorCromossomo);
     }
 
     private embaralharCidades(): Array<Node> {
@@ -61,35 +72,41 @@ export class AlgoritmoGeneticoService {
     }
 
     private selecaoNatural(): Array<ResultadoSelecaoNatural> {
-        let populacaoAux = this.populacao.map(x => new Cromossomo(x.individuos));
+        let populacaoAux = this.populacao.map(x => new Cromossomo(x.id, x.individuos));
         let tuplasDosFilhos: Array<ResultadoSelecaoNatural> = [];
 
         for (var i = 0; i < this.dadosEntrada.tamanhoPopulacao / 2; i++) {
             let primeiroFilho = this._roleta.melhor(populacaoAux);
-            populacaoAux.splice(this.populacao.indexOf(primeiroFilho));
+            populacaoAux.splice(populacaoAux.indexOf(primeiroFilho), 1);
 
             let segundoFilho = this._roleta.melhor(populacaoAux);
-            populacaoAux.splice(this.populacao.indexOf(segundoFilho));
+            populacaoAux.splice(populacaoAux.indexOf(segundoFilho), 1);
 
             tuplasDosFilhos.push(new ResultadoSelecaoNatural(primeiroFilho, segundoFilho));
         }
         return tuplasDosFilhos;
     }
 
-    private crossover(tuplas: Array<ResultadoSelecaoNatural>) {
+    private crossover(tuplas: Array<ResultadoSelecaoNatural>): Cromossomo[] {
+        let filhos: Cromossomo[] = [];
         for (var i = 0; i < tuplas.length; i++) {
             this._sorter.resetArray();
             if (this._sorter.sort(101) > this.dadosEntrada.taxaCrossover)
                 continue;
 
             var tupla = tuplas[i];
-            let filhoUm = this.gerarFilho(tupla);
-            if (filhoUm.fitness < tupla.filhoUm.fitness || tupla.filhoDois.fitness)
-                this.subistituir(filhoUm);
+            let filho = this.gerarFilho(tupla);
+            filhos.push(filho);
+        }
 
-            let filhoDois = this.gerarFilho(tupla);
-            if (filhoDois.fitness < tupla.filhoDois.fitness || tupla.filhoDois.fitness)
-                this.subistituir(filhoDois);
+        return filhos;
+    }
+
+    private mutacao(filhos: Cromossomo[]) {
+        for (var i = 0; i < filhos.length; i++) {
+            this._sorter.resetArray();
+            if (this._sorter.sort(101) > this.dadosEntrada.taxaMutacao)
+                filhos[i] = new Cromossomo(filhos[i].id, this.embaralharCidades());
         }
     }
 
@@ -98,8 +115,8 @@ export class AlgoritmoGeneticoService {
         let nodes = this.gerarAhPartirDaMascara(tupla, mask);
         this.completar(nodes);
 
-        let cromossomo = new Cromossomo(nodes);
-        this.verificarCromossomo(cromossomo);
+        let cromossomo = new Cromossomo(this.cromossomoId++, nodes);
+        // this.verificarCromossomo(cromossomo);
         return cromossomo
     }
 
@@ -143,7 +160,7 @@ export class AlgoritmoGeneticoService {
 
     private completar(nodes: Node[]) {
         for (var i = 0; i < nodes.length; i++) {
-            if (!nodes[i])
+            if (!nodes[i] || nodes.filter(x => x && x.ordinalName == nodes[i].ordinalName).length > 1)
                 nodes[i] = this.primeiroQueNaoExiste(nodes);
         }
     }
@@ -171,7 +188,7 @@ export class AlgoritmoGeneticoService {
     private pegarMelhorFitnes(): Cromossomo {
         let menor = this.populacao[0];
         for (var i = 0; i < this.dadosEntrada.tamanhoPopulacao; i++) {
-            if (this.populacao[i].fitness < menor.fitness)
+            if (this.populacao[i] && this.populacao[i].fitness < menor.fitness)
                 menor = this.populacao[i];
         }
         return menor;

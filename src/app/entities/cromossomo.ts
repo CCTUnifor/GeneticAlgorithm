@@ -1,6 +1,7 @@
 import { Edge } from './edge';
 import { Node } from "./node";
 export class Cromossomo {
+    private _id: number;
     private _cidades: Node[];
     private _edges: Edge[];
     public get individuos(): Node[] {
@@ -9,8 +10,12 @@ export class Cromossomo {
     public get edges(): Edge[] {
         return this._edges;
     }
+    public get id() {
+        return this._id;
+    }
 
-    constructor(cidades: Node[]) {
+    constructor(id: number, cidades: Node[]) {
+        this._id = id;
         this._cidades = cidades;
         this._edges = [];
         this.carregarEdges(cidades);
