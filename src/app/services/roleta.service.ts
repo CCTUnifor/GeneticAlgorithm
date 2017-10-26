@@ -18,7 +18,7 @@ export class RoletaService {
 
     for (var i = 0; i < populacao.length; i++) {
       let cromossomo = populacao[i];
-      let quantidadeDaPartition = Math.ceil((fitnesTotal / cromossomo.fitness));
+      let quantidadeDaPartition = Math.ceil((fitnesTotal / cromossomo.fitness)/10);
       for (var index = 0; index < quantidadeDaPartition; index++) {
         partition.push(cromossomo);
       }

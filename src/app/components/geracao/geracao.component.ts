@@ -86,7 +86,7 @@ export class GeracaoComponent implements OnInit {
     // console.log(this.geracao, this._aG.melhorCromossomo.fitness)
     if (this.ehParaParar())
       return;
-    setTimeout(() => this.geracoes(), 1000);
+    setTimeout(() => this.geracoes(), 400);
   }
 
   renderizar(): void {
