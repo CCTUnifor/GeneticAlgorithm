@@ -14,6 +14,10 @@ import { MainComponent } from './main/main.component';
 import { GeracaoComponent } from './components/geracao/geracao.component';
 import { EntradaDadosComponent } from './components/entrada-dados/entrada-dados.component';
 
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { ModalModule } from 'ngx-bootstrap/modal';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,7 +27,10 @@ import { EntradaDadosComponent } from './components/entrada-dados/entrada-dados.
   ],
   imports: [
     BrowserModule,
-    FormsModule
+    FormsModule,
+    BsDropdownModule.forRoot(),
+    TooltipModule.forRoot(),
+    ModalModule.forRoot(),
   ],
   providers: [IOManagerService,
     ArquivoEntradaService,

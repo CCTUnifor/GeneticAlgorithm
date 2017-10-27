@@ -1,14 +1,36 @@
 <div class="entrada-dados">
   <div class="controle-entrada">
-    <div class="arquivo">
-      <span class="">Arquivo: </span>
-      <input type="file" (change)="onInputChange($event)">
+
+    <div class="form-group">
+      <label for="input-file">Arquivo:</label>
+      <input type="file" (change)="onInputChange($event)" id="input-file">
     </div>
+
+    <div class="form-group">
+      <label for="tamanho-populacao">Tamanho população:</label>
+      <input id="tamanho-populacao" type="text" [(ngModel)]="dados.tamanhoPopulacao">
+    </div>
+
+    <div class="form-group">
+      <label for="taxa-crossover">Taxa de crossover:</label>
+      <input id="taxa-crossover" type="text" [(ngModel)]="dados.taxaCrossover">
+    </div>
+
+    <div class="form-group">
+      <label for="taxa-mutacao">Taxa de mutacao:</label>
+      <input id="taxa-mutacao" type="text" [(ngModel)]="dados.taxaMutacao">
+    </div>
+
+    <div class="form-group">
+        <label for="criterio-parada">Criterio de parada:</label>
+        <input id="criterio-parada" type="text" [(ngModel)]="dados.criterioParada">
+      </div>
   </div>
+
   <div class="controle-acoes">
-    <button [disabled]="!dados.arquivo" (click)="startar()">Startar</button>
-    <button [disabled]="!dados.arquivo">Pausar</button>
-    <button [disabled]="!dados.arquivo">Resetar</button>
-    <button [disabled]="!dados.arquivo" (click)="limpar()">Limpar</button>
+    <button [disabled]="!dados.arquivo" class="btn btn-primary" (click)="startar()">Startar</button>
+    <button [disabled]="!dados.arquivo" class="btn btn-primary">Pausar</button>
+    <button [disabled]="!dados.arquivo" class="btn btn-primary">Resetar</button>
+    <button [disabled]="!dados.arquivo" class="btn btn-primary" (click)="limpar()">Limpar</button>
   </div>
 </div>

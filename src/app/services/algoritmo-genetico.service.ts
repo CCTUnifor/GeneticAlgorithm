@@ -80,10 +80,7 @@ export class AlgoritmoGeneticoService {
 
         for (var i = 0; i < this.dadosEntrada.tamanhoPopulacao / 2; i++) {
             let primeiroFilho = this._roleta.melhor(populacaoAux);
-            populacaoAux.splice(populacaoAux.indexOf(primeiroFilho), 1);
-
             let segundoFilho = this._roleta.melhor(populacaoAux);
-            populacaoAux.splice(populacaoAux.indexOf(segundoFilho), 1);
 
             tuplasDosFilhos.push(new ResultadoSelecaoNatural(primeiroFilho, segundoFilho));
         }
@@ -112,9 +109,10 @@ export class AlgoritmoGeneticoService {
             this._sorter.resetArray();
             let filho = filhos[i];
             if (this._sorter.sort(101) > this.dadosEntrada.taxaMutacao) {
-                this.MutarElemento(filho);
-                this.MutarElemento(filho);
-                this.MutarElemento(filho);
+                filho = this.MutarElemento(filho);
+                filho = this.MutarElemento(filho);
+                filho = this.MutarElemento(filho);
+                filho = this.MutarElemento(filho);
             }
             filhosMutados.push(filho);
         }
