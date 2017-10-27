@@ -48,18 +48,19 @@ export class AlgoritmoGeneticoService {
         let resultadoSelecaoNatural = this.selecaoNatural();
         // console.log(resultadoSelecaoNatural.map(function(x) {return {filhoUm: x.filhoUm.fitness, filhoDois: x.filhoDois.fitness}}))
         let filhos = this.crossover(resultadoSelecaoNatural);
-        this.mutacao(filhos);
-        // console.log(filhos.map(function(x) {return x.fitness}))
-
-        filhos.forEach((filho) => {
-            this.populacao.push(filho);
-        });
-
-        this._cromossomoSorter.ordernar(this.populacao);
-        this.populacao = this.populacao.splice(0, this.dadosEntrada.tamanhoPopulacao);
+        let filhosMutados = this.mutacao(filhos);
+        this.elitismo(filhosMutados);
 
         this.melhorCromossomo = this.populacao[0];
         // this.verificarCromossomo(this.melhorCromossomo);
+    }
+
+    private elitismo(filhos: Cromossomo[]) {
+        filhos.forEach((filho) => {
+            this.populacao.push(filho);
+        });
+        this._cromossomoSorter.ordernar(this.populacao);
+        this.populacao = this.populacao.splice(0, this.dadosEntrada.tamanhoPopulacao);
     }
 
     private embaralharCidades(): Array<Node> {
@@ -98,37 +99,42 @@ export class AlgoritmoGeneticoService {
 
             var tupla = tuplas[i];
             let filho = this.gerarFilho(tupla);
-            console.log(tupla)
-            console.log(filho)
             filhos.push(filho);
         }
 
         return filhos;
     }
 
-    private mutacao(filhos: Cromossomo[]) {
+    private mutacao(filhos: Cromossomo[]): Cromossomo[] {
+        let filhosMutados: Cromossomo[] = [];
+
         for (var i = 0; i < filhos.length; i++) {
             this._sorter.resetArray();
+            let filho = filhos[i];
             if (this._sorter.sort(101) > this.dadosEntrada.taxaMutacao) {
-                this.MutarElemento(filhos);
-                this.MutarElemento(filhos);
-                this.MutarElemento(filhos);
+                this.MutarElemento(filho);
+                this.MutarElemento(filho);
+                this.MutarElemento(filho);
             }
+            filhosMutados.push(filho);
         }
+        return filhosMutados;
     }
 
-    private MutarElemento(filhos: Cromossomo[]) {
-        this._sorter.resetArray();
-        let i = this._sorter.sort(filhos.length);
-        this._sorter.resetArray();
-        let j = this._sorter.sort(filhos.length);
-        this.swapPosition(filhos, i, j);
+    private MutarElemento(cromossomo: Cromossomo): Cromossomo {
+        let elementoMutado = new Cromossomo(cromossomo.id, cromossomo.individuos);
+
+        let i = this._sorter.sort(elementoMutado.individuos.length);
+        let j = this._sorter.sort(elementoMutado.individuos.length);
+        this.swapPosition(elementoMutado.individuos, i, j);
+
+        return elementoMutado;
     }
 
-    private swapPosition(filhos: Cromossomo[], i: number, j: number) {
-        let aux = filhos[i];
-        filhos[i] = filhos[j];
-        filhos[j] = aux;
+    private swapPosition(array: any[], i: number, j: number) {
+        let aux = array[i];
+        array[i] = array[j];
+        array[j] = aux;
     }
 
     private gerarFilho(tupla: ResultadoSelecaoNatural) {

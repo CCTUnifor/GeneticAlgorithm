@@ -29,16 +29,11 @@ export class Cromossomo {
         }
     }
 
-    private _fitness: number;
     public get fitness(): number {
-        if (this._fitness != undefined)
-            return this._fitness;
-
         let fit = 0;
         for (var i = 0; i < this._edges.length; i++) {
             fit += this._edges[i].tamanho;
         }
-        this._fitness = fit;
         return fit;
     }
 }
