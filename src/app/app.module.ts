@@ -17,6 +17,7 @@ import { EntradaDadosComponent } from './components/entrada-dados/entrada-dados.
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { SelecaoNaturalRoletaServiceService } from './services/selecao-natural/selecao-natural-roleta-service.service';
 
 @NgModule({
   declarations: [
@@ -32,13 +33,16 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     TooltipModule.forRoot(),
     ModalModule.forRoot(),
   ],
-  providers: [IOManagerService,
+  providers: [
+    IOManagerService,
     ArquivoEntradaService,
     SorteadorService,
     ControleDeAcaoService,
     AlgoritmoGeneticoService,
     RoletaService,
-    CromossomoSorterService],
+    CromossomoSorterService,
+    SelecaoNaturalRoletaServiceService,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

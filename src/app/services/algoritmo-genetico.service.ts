@@ -1,3 +1,5 @@
+import { SelecaoNaturalRoletaServiceService } from './selecao-natural/selecao-natural-roleta-service.service';
+import { ISelecaoNatural } from './../interfaces/selecao-natural';
 import { CromossomoSorterService } from './cromossomo-sorter.service';
 import { Cromossomo } from './../entities/cromossomo';
 import { RoletaService } from './roleta.service';
@@ -6,6 +8,7 @@ import { SorteadorService } from './../services/sorteador.service';
 import { ArquivoEntradaService } from '../services/arquivo-entrada.service';
 import { EntradaDados } from '../entities/entrada-dados';
 import { Node } from '../entities/node';
+import { ResultadoSelecaoNatural } from '../interfaces/selecao-natural';
 
 @Injectable()
 export class AlgoritmoGeneticoService {
@@ -16,8 +19,8 @@ export class AlgoritmoGeneticoService {
 
     constructor(private _arquivoEntrada: ArquivoEntradaService,
         private _sorter: SorteadorService,
-        private _roleta: RoletaService,
-        private _cromossomoSorter: CromossomoSorterService) { }
+        private _cromossomoSorter: CromossomoSorterService,
+        private _selecaoNatural: SelecaoNaturalRoletaServiceService) { }
 
     public async prepararEntradaDeDados(dados: EntradaDados) {
         this.dadosEntrada = dados;
@@ -74,16 +77,14 @@ export class AlgoritmoGeneticoService {
         return cidadesEmbaralhadas;
     }
 
-    private selecaoNatural(): Array<ResultadoSelecaoNatural> {
-        let populacaoAux = this.populacao.map(x => new Cromossomo(x.id, x.individuos));
+    private selecaoNatural(): ResultadoSelecaoNatural[] {
         let tuplasDosFilhos: Array<ResultadoSelecaoNatural> = [];
 
         for (var i = 0; i < this.dadosEntrada.tamanhoPopulacao / 2; i++) {
-            let primeiroFilho = this._roleta.melhor(populacaoAux);
-            let segundoFilho = this._roleta.melhor(populacaoAux);
-
-            tuplasDosFilhos.push(new ResultadoSelecaoNatural(primeiroFilho, segundoFilho));
+            let pais = this._selecaoNatural.gerarPais(this.populacao);
+            tuplasDosFilhos.push(pais);
         }
+
         return tuplasDosFilhos;
     }
 
@@ -108,25 +109,25 @@ export class AlgoritmoGeneticoService {
         for (var i = 0; i < filhos.length; i++) {
             this._sorter.resetArray();
             let filho = filhos[i];
-            if (this._sorter.sort(101) > this.dadosEntrada.taxaMutacao) {
-                filho = this.MutarElemento(filho);
-                filho = this.MutarElemento(filho);
-                filho = this.MutarElemento(filho);
-                filho = this.MutarElemento(filho);
+            if (this._sorter.sort(101) <= this.dadosEntrada.taxaMutacao) {
+                this._sorter.resetArray();
+                let quantidade = this._sorter.sort(filhos.length / 4);
+                for (var j = 0; j < quantidade; j++) {
+                    this.mutarElemento(filho);
+                }
             }
             filhosMutados.push(filho);
         }
         return filhosMutados;
     }
 
-    private MutarElemento(cromossomo: Cromossomo): Cromossomo {
-        let elementoMutado = new Cromossomo(cromossomo.id, cromossomo.individuos);
+    private mutarElemento(cromossomo: Cromossomo) {
 
-        let i = this._sorter.sort(elementoMutado.individuos.length);
-        let j = this._sorter.sort(elementoMutado.individuos.length);
-        this.swapPosition(elementoMutado.individuos, i, j);
+        let i = this._sorter.sort(cromossomo.individuos.length);
+        let j = this._sorter.sort(cromossomo.individuos.length);
+        this.swapPosition(cromossomo.individuos, i, j);
 
-        return elementoMutado;
+        this.verificarCromossomo(cromossomo)
     }
 
     private swapPosition(array: any[], i: number, j: number) {
@@ -158,8 +159,8 @@ export class AlgoritmoGeneticoService {
     private gerarAhPartirDaMascara(tupla: ResultadoSelecaoNatural, mask: any[]) {
         let nodes: Node[] = [];
         for (var i = 0; i < this._arquivoEntrada.quantidadeDeCidades; i++) {
-            let left = tupla.filhoUm.individuos[i];
-            let right = tupla.filhoDois.individuos[i];
+            let left = tupla.selecionados[0].individuos[i];
+            let right = tupla.selecionados[1].individuos[i];
 
             if (nodes.indexOf(left) > 0 && nodes.indexOf(right) > 0) {
                 nodes.push(undefined);
@@ -218,8 +219,4 @@ export class AlgoritmoGeneticoService {
         }
         return menor;
     }
-}
-
-class ResultadoSelecaoNatural {
-    constructor(public filhoUm: Cromossomo, public filhoDois: Cromossomo) { }
 }

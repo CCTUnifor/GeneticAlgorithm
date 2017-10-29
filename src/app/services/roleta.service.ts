@@ -1,47 +1,57 @@
 import { SorteadorService } from './sorteador.service';
 import { Cromossomo } from './../entities/cromossomo';
 import { Injectable } from '@angular/core';
+import { ResultadoSelecaoNatural } from '../interfaces/selecao-natural';
 
 @Injectable()
 export class RoletaService {
 
   constructor(private _sorter: SorteadorService) { }
 
-  public melhor(populacao: Array<Cromossomo>): Cromossomo {
+  public roll(populacao: Array<Cromossomo>, quantidade: number = 2): ResultadoSelecaoNatural {
     let keys: KeyPair<Cromossomo>[] = [];
-    let fitnesTotal = 0;
-    populacao.forEach(cromossomo => {
-      fitnesTotal += cromossomo.fitness;
-    });
-
-    let indexPartition: number = 0;
+    let fitnesTotal = this.fitnessTotal(populacao);
 
     for (var i = 0; i < populacao.length; i++) {
       let cromossomo = populacao[i];
-      let quantidadeDaPartition = (indexPartition + (fitnesTotal / cromossomo.fitness))/100;
-      keys.push(new KeyPair(indexPartition, quantidadeDaPartition, cromossomo));
-      indexPartition += quantidadeDaPartition;
-      // for (var index = 0; index < quantidadeDaPartition; index++) {
-      //   partition.push(cromossomo);
-      // }
+      let porcentagem = (fitnesTotal / cromossomo.fitness);
 
+      keys.push(new KeyPair(porcentagem, cromossomo));
     }
 
-    this._sorter.resetArray();
-    let number = this._sorter.sort(indexPartition, true);
-    let x = keys.filter(x => x.min >= number && x.max < number).map(x => x.value)[0];
+    keys = keys.sort((a, b) => {
+      if (a.key > b.key)
+        return 1;
+      if (a.key < b.key)
+        return -1;
+      return 0;
+    })
 
-    return x;
+    let retorno = [];
+    this._sorter.resetArray();
+    for (var i = 0; i < quantidade; i++) {
+      let number = this._sorter.sort(populacao.length);
+      let x = keys[number].value;
+      retorno.push(x);
+    }
+
+    return new ResultadoSelecaoNatural(retorno);
+  }
+
+  private fitnessTotal(populacao: Cromossomo[]) {
+    let fitnesTotal: number = 0;
+    populacao.forEach(cromossomo => {
+      fitnesTotal += cromossomo.fitness;
+    });
+    return fitnesTotal;
   }
 }
 class KeyPair<T> {
-  min: number;
-  max: number;
+  key: number;
   value: T;
 
-  constructor(min, max, v: T) {
-    this.min = min;
-    this.max = max;
+  constructor(key, v: T) {
+    this.key = key;
     this.value = v;
   }
 }
