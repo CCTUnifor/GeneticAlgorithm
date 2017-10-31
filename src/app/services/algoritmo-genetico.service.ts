@@ -49,13 +49,11 @@ export class AlgoritmoGeneticoService {
 
     public gerarMelhorSolucaoDaGeracao() {
         let resultadoSelecaoNatural = this.selecaoNatural();
-        // console.log(resultadoSelecaoNatural.map(function(x) {return {filhoUm: x.filhoUm.fitness, filhoDois: x.filhoDois.fitness}}))
         let filhos = this.crossover(resultadoSelecaoNatural);
         let filhosMutados = this.mutacao(filhos);
         this.elitismo(filhosMutados);
 
         this.melhorCromossomo = this.populacao[0];
-        // this.verificarCromossomo(this.melhorCromossomo);
     }
 
     private elitismo(filhos: Cromossomo[]) {
@@ -111,10 +109,10 @@ export class AlgoritmoGeneticoService {
             let filho = filhos[i];
             if (this._sorter.sort(101) <= this.dadosEntrada.taxaMutacao) {
                 this._sorter.resetArray();
-                let quantidade = this._sorter.sort(filhos.length / 4);
-                for (var j = 0; j < quantidade; j++) {
-                    this.mutarElemento(filho);
-                }
+                // let quantidade = this._sorter.sort(filhos.length / 4);
+                this.mutarElemento(filho);
+                // for (var j = 0; j < quantidade; j++) {
+                // }
             }
             filhosMutados.push(filho);
         }

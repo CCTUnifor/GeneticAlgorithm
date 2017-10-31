@@ -18,6 +18,8 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { SelecaoNaturalRoletaServiceService } from './services/selecao-natural/selecao-natural-roleta-service.service';
+import { TimerComponent } from './components/timer/timer.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -25,6 +27,7 @@ import { SelecaoNaturalRoletaServiceService } from './services/selecao-natural/s
     MainComponent,
     GeracaoComponent,
     EntradaDadosComponent,
+    TimerComponent,
   ],
   imports: [
     BrowserModule,
@@ -32,6 +35,7 @@ import { SelecaoNaturalRoletaServiceService } from './services/selecao-natural/s
     BsDropdownModule.forRoot(),
     TooltipModule.forRoot(),
     ModalModule.forRoot(),
+    CommonModule
   ],
   providers: [
     IOManagerService,

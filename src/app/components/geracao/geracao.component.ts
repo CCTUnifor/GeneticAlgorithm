@@ -78,12 +78,11 @@ export class GeracaoComponent implements OnInit {
     return this.countSemMudar >= this.dados.criterioParada;
   }
 
-  private async geracoes() {
+  private geracoes() {
     this.geracao++;
-    await this._aG.gerarMelhorSolucaoDaGeracao();
-    await this.renderizar();
+    this._aG.gerarMelhorSolucaoDaGeracao();
+    this.renderizar();
 
-    // console.log(this.geracao, this._aG.melhorCromossomo.fitness)
     if (this.ehParaParar())
       return;
     setTimeout(() => this.geracoes(), 400);
@@ -92,7 +91,6 @@ export class GeracaoComponent implements OnInit {
   renderizar(): void {
     this.drawable = this.drawable || new IDrawable(this.context);
     this.draw();
-    // requestAnimationFrame(() => this.renderizar());
   }
 
   limparCanvas() {
