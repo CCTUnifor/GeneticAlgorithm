@@ -1,5 +1,12 @@
-canvas {
-    border: 1px solid black;
+.geracao {
+    display: inline-block;
+    margin: 15px;
+
+    &__titulo {
+    }
+    &__canvas {
+        border: 1px solid black;
+    }
 }
 
 .finish {

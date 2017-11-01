@@ -5,7 +5,7 @@ import { EntradaDados } from '../../entities/entrada-dados';
 @Component({
   selector: 'app-entrada-dados',
   templateUrl: './entrada-dados.component.html',
-  styleUrls: ['./entrada-dados.component.css']
+  styleUrls: ['./entrada-dados.component.scss']
 })
 export class EntradaDadosComponent {
   private dados: EntradaDados;

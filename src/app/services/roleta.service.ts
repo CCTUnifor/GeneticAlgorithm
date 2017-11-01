@@ -7,21 +7,28 @@ import { ResultadoSelecaoNatural } from '../interfaces/selecao-natural';
 @Injectable()
 export class RoletaService {
 
+  private keys: KeyPair<Cromossomo>[];
+
   constructor(private _sorter: SorteadorService) { }
 
+  public prepararRoleta(populacao: Cromossomo[]) {
+    this.keys = this.gerarPorcentagem(populacao);
+    this.ordernar();
+    this.ajustarPosicoes();
+  }
+
   public roll(populacao: Array<Cromossomo>, quantidade: number = 2): ResultadoSelecaoNatural {
-    let keys = this.gerarPorcentagem(populacao);
-    this.ordernar(keys);
-    this.ajustarPosicoes(keys);
+    if (!this.keys)
+      this.prepararRoleta(populacao);
 
     let retorno = [];
     for (var i = 0; i < quantidade; i++) {
       this._sorter.resetArray();
       let number = this._sorter.sort(1, true) + 1;
-      
+
       let x = 0;
-      for (var j = 0; j < keys.length; j++) {
-        var element = keys[j];
+      for (var j = 0; j < this.keys.length; j++) {
+        var element = this.keys[j];
         x += element.key;
         if (x >= number) {
           retorno.push(element.value);
@@ -29,12 +36,11 @@ export class RoletaService {
         }
       }
     }
-
     return new ResultadoSelecaoNatural(retorno);
   }
 
-  private ordernar(keys: KeyPair<Cromossomo>[]) {
-    keys = keys.sort((a, b) => {
+  private ordernar() {
+    this.keys = this.keys.sort((a, b) => {
       if (a.key > b.key)
         return 1;
       if (a.key < b.key)
@@ -64,13 +70,13 @@ export class RoletaService {
     return keys;
   }
 
-  private ajustarPosicoes(keys: KeyPair<Cromossomo>[]) {
-    for (var i = 0; i < keys.length / 2; i++) {
-      var element = new KeyPair(keys[i].key, keys[i].value);
-      let correspondente = (keys.length - i) - 1;
+  private ajustarPosicoes() {
+    for (var i = 0; i < this.keys.length / 2; i++) {
+      var element = new KeyPair(this.keys[i].key, this.keys[i].value);
+      let correspondente = (this.keys.length - i) - 1;
 
-      keys[i].value = keys[correspondente].value;
-      keys[correspondente].value = element.value;
+      this.keys[i].value = this.keys[correspondente].value;
+      this.keys[correspondente].value = element.value;
     }
   }
 

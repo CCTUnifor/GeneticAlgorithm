@@ -8,7 +8,15 @@ export class SelecaoNaturalRoletaServiceService implements ISelecaoNatural {
 
   constructor(private _roleta: RoletaService) { }
 
-  public gerarPais(populacao: Cromossomo[]): ResultadoSelecaoNatural {
-    return this._roleta.roll(populacao)
+  public gerarPais(populacao: Cromossomo[]): ResultadoSelecaoNatural[] {
+    let tuplasDosFilhos: Array<ResultadoSelecaoNatural> = [];
+    this._roleta.prepararRoleta(populacao);
+
+    for (var i = 0; i < populacao.length / 2; i++) {
+      let pais = this._roleta.roll(populacao);
+      tuplasDosFilhos.push(pais);
+    }
+
+    return tuplasDosFilhos;
   }
 }

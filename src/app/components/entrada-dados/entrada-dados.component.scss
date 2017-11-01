@@ -1,0 +1,24 @@
+.entrada-dados{
+    display: inline-block;
+    position: absolute;
+    height: 97%;
+    width: 34%;
+
+    .row {
+        margin-bottom: 10px;
+    }
+
+    fieldset {
+        padding: 0px 15px;
+        border: 1px black solid;
+        border-radius: 5px;
+
+        legend {
+            width: auto;
+            padding: 0px 10px;
+        }
+    }
+    &__controle-acoes {
+        margin-bottom: 10px;
+    }
+}

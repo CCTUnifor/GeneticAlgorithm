@@ -13,7 +13,7 @@ import { SorteadorService } from '../../services/sorteador.service';
 @Component({
   selector: 'app-geracao',
   templateUrl: './geracao.component.html',
-  styleUrls: ['./geracao.component.css']
+  styleUrls: ['./geracao.component.scss']
 })
 export class GeracaoComponent implements OnInit {
   @ViewChild("myCanvas") myCanvas;

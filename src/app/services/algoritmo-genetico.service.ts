@@ -39,31 +39,6 @@ export class AlgoritmoGeneticoService {
         return populacao;
     }
 
-    private verificarCromossomo(cromossomo: Cromossomo) {
-        let ordinalNamers = cromossomo.individuos.map(x => x.ordinalName);
-        for (var i = 0; i < cromossomo.individuos.length; i++) {
-            if (ordinalNamers.indexOf(i) < 0)
-                debugger;
-        }
-    }
-
-    public gerarMelhorSolucaoDaGeracao() {
-        let resultadoSelecaoNatural = this.selecaoNatural();
-        let filhos = this.crossover(resultadoSelecaoNatural);
-        let filhosMutados = this.mutacao(filhos);
-        this.elitismo(filhosMutados);
-
-        this.melhorCromossomo = this.populacao[0];
-    }
-
-    private elitismo(filhos: Cromossomo[]) {
-        filhos.forEach((filho) => {
-            this.populacao.push(filho);
-        });
-        this._cromossomoSorter.ordernar(this.populacao);
-        this.populacao = this.populacao.splice(0, this.dadosEntrada.tamanhoPopulacao);
-    }
-
     private embaralharCidades(): Array<Node> {
         let cidadesEmbaralhadas: Array<Node> = new Array<Node>();
 
@@ -75,52 +50,50 @@ export class AlgoritmoGeneticoService {
         return cidadesEmbaralhadas;
     }
 
-    private selecaoNatural(): ResultadoSelecaoNatural[] {
-        let tuplasDosFilhos: Array<ResultadoSelecaoNatural> = [];
-
-        for (var i = 0; i < this.dadosEntrada.tamanhoPopulacao / 2; i++) {
-            let pais = this._selecaoNatural.gerarPais(this.populacao);
-            tuplasDosFilhos.push(pais);
+    private verificarCromossomo(cromossomo: Cromossomo) {
+        let ordinalNamers = cromossomo.individuos.map(x => x.ordinalName);
+        for (var i = 0; i < cromossomo.individuos.length; i++) {
+            if (ordinalNamers.indexOf(i) < 0)
+                debugger;
         }
+    }
 
-        return tuplasDosFilhos;
+    public gerarMelhorSolucaoDaGeracao() {
+        let resultadoSelecaoNatural = this._selecaoNatural.gerarPais(this.populacao)// this.selecaoNatural();
+        let filhos = this.crossover(resultadoSelecaoNatural);
+        this.elitismo(filhos);
+
+        this.melhorCromossomo = this.populacao[0];
     }
 
     private crossover(tuplas: Array<ResultadoSelecaoNatural>): Cromossomo[] {
         let filhos: Cromossomo[] = [];
         for (var i = 0; i < tuplas.length; i++) {
-            this._sorter.resetArray();
-            if (this._sorter.sort(101) > this.dadosEntrada.taxaCrossover)
+            if (!this.ehPraFazerCrossover())
                 continue;
 
             var tupla = tuplas[i];
             let filho = this.gerarFilho(tupla);
+
+            if (this.ehPraMutar())
+                this.mutarElemento(filho);
+
             filhos.push(filho);
         }
 
         return filhos;
     }
 
-    private mutacao(filhos: Cromossomo[]): Cromossomo[] {
-        let filhosMutados: Cromossomo[] = [];
-
-        for (var i = 0; i < filhos.length; i++) {
-            this._sorter.resetArray();
-            let filho = filhos[i];
-            if (this._sorter.sort(101) <= this.dadosEntrada.taxaMutacao) {
-                this._sorter.resetArray();
-                // let quantidade = this._sorter.sort(filhos.length / 4);
-                this.mutarElemento(filho);
-                // for (var j = 0; j < quantidade; j++) {
-                // }
-            }
-            filhosMutados.push(filho);
-        }
-        return filhosMutados;
+    private ehPraFazerCrossover() {
+        this._sorter.resetArray();
+        return this._sorter.sort(101) <= this.dadosEntrada.taxaCrossover;
+    }
+    private ehPraMutar() {
+        this._sorter.resetArray();
+        return this._sorter.sort(101) <= this.dadosEntrada.taxaMutacao;
     }
 
     private mutarElemento(cromossomo: Cromossomo) {
-
         let i = this._sorter.sort(cromossomo.individuos.length);
         let j = this._sorter.sort(cromossomo.individuos.length);
         this.swapPosition(cromossomo.individuos, i, j);
@@ -134,13 +107,20 @@ export class AlgoritmoGeneticoService {
         array[j] = aux;
     }
 
+    private elitismo(filhos: Cromossomo[]) {
+        filhos.forEach((filho) => {
+            this.populacao.push(filho);
+        });
+        this._cromossomoSorter.ordernar(this.populacao);
+        this.populacao = this.populacao.splice(0, this.dadosEntrada.tamanhoPopulacao);
+    }
+
     private gerarFilho(tupla: ResultadoSelecaoNatural) {
         let mask = this.gerarMascara();
         let nodes = this.gerarAhPartirDaMascara(tupla, mask);
         this.completar(nodes);
 
         let cromossomo = new Cromossomo(this.cromossomoId++, nodes);
-        // this.verificarCromossomo(cromossomo);
         return cromossomo
     }
 
