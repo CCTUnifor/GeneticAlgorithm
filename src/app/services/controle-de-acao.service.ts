@@ -12,6 +12,7 @@ export class ControleDeAcaoService {
   public handlePausarAplicacao: Observable<any> = this.controleDeAcaoSource.asObservable();
   public handleLimparAplicacao: Observable<any> = this.controleDeAcaoSource.asObservable();
   public handleResetarAplicacao: Observable<any> = this.controleDeAcaoSource.asObservable();
+  public handleProgramaAcabou: Observable<any> = this.controleDeAcaoSource.asObservable();
 
   public startarAplicacao(dados: EntradaDados) {
     this.controleDeAcaoSource.next(dados);
@@ -26,6 +27,10 @@ export class ControleDeAcaoService {
   }
 
   public resetarAplicacao() {
+    this.controleDeAcaoSource.next(1);
+  }
+
+  public programaAcabou() {
     this.controleDeAcaoSource.next(1);
   }
 }

@@ -1,3 +1,4 @@
+import { ResultadoEventService } from './../../services/resultado-event.service';
 import { AlgoritmoGeneticoService } from './../../services/algoritmo-genetico.service';
 import { EntradaDados } from './../../entities/entrada-dados';
 import { ControleDeAcaoService } from './../../services/controle-de-acao.service';
@@ -23,6 +24,7 @@ export class GeracaoComponent implements OnInit {
   private dados: EntradaDados;
   private geracao: number = 0;
   private countSemMudar: number = 0;
+  private quantidadeDeSolucoes: number = 0;
   private ultimoMelhorCromossomo: Cromossomo;
 
   private get titulo(): string {
@@ -45,7 +47,8 @@ export class GeracaoComponent implements OnInit {
   constructor(private _controleAcaoService: ControleDeAcaoService,
     private _sorter: SorteadorService,
     private _aG: AlgoritmoGeneticoService,
-    private _entrada: ArquivoEntradaService) {
+    private _entrada: ArquivoEntradaService,
+    private _resultadoEvent: ResultadoEventService) {
     this._controleAcaoService.handleStartarAplicacao.subscribe((dados) => this.startar(dados));
     this._controleAcaoService.handleLimparAplicacao.subscribe(() => this.limparCanvas());
   }
@@ -59,12 +62,34 @@ export class GeracaoComponent implements OnInit {
 
   private async startar(dados: EntradaDados) {
     this.dados = dados;
+    this._aG.resetar();
     await this._aG.prepararEntradaDeDados(dados);
 
     this.geracoes();
   }
 
-  private ehParaParar() {
+  private geracoes() {
+    this.geracao++;
+    this._aG.gerarMelhorSolucaoDaGeracao();
+    this.renderizar();
+
+    this.atualizarUltimoMelhorCromossomo();
+
+    if (this.achouMelhorSolucao) {
+      this._resultadoEvent.add(this.melhorCromossomoDaGeracao);
+      this.quantidadeDeSolucoes++;
+      if (this.programaAcabou) {
+        this._controleAcaoService.programaAcabou();
+        return;
+      }
+
+      this.startar(this.dados);
+    }
+
+    setTimeout(() => this.geracoes(), 1);
+  }
+
+  private atualizarUltimoMelhorCromossomo() {
     if (!this.ultimoMelhorCromossomo)
       this.ultimoMelhorCromossomo = this.melhorCromossomoDaGeracao;
 
@@ -74,18 +99,14 @@ export class GeracaoComponent implements OnInit {
     }
     else
       this.countSemMudar++;
+  }
 
+  private get achouMelhorSolucao() {
     return this.countSemMudar >= this.dados.criterioParada;
   }
 
-  private geracoes() {
-    this.geracao++;
-    this._aG.gerarMelhorSolucaoDaGeracao();
-    this.renderizar();
-
-    if (this.ehParaParar())
-      return;
-    setTimeout(() => this.geracoes(), 400);
+  private get programaAcabou() {
+    return this.quantidadeDeSolucoes >= 10;
   }
 
   renderizar(): void {

@@ -28,6 +28,13 @@ export class AlgoritmoGeneticoService {
         this.populacao = this.popularCromossomos();
     }
 
+    public resetar() {
+        this.melhorCromossomo = undefined;
+        this.cromossomoId = 1;
+        this.dadosEntrada = undefined;
+        this.populacao = undefined;
+    }
+
     private popularCromossomos(): Array<Cromossomo> {
         let populacao = new Array<Cromossomo>()
         for (var i = 0; i < this.dadosEntrada.tamanhoPopulacao; i++) {

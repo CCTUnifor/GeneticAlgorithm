@@ -1,3 +1,4 @@
+import { ResultadoEventService } from './services/resultado-event.service';
 import { CromossomoSorterService } from './services/cromossomo-sorter.service';
 import { RoletaService } from './services/roleta.service';
 import { AlgoritmoGeneticoService } from './services/algoritmo-genetico.service';
@@ -20,6 +21,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { SelecaoNaturalRoletaServiceService } from './services/selecao-natural/selecao-natural-roleta-service.service';
 import { TimerComponent } from './components/timer/timer.component';
 import { CommonModule } from '@angular/common';
+import { ResultadosComponent } from './components/resultados/resultados.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,7 @@ import { CommonModule } from '@angular/common';
     GeracaoComponent,
     EntradaDadosComponent,
     TimerComponent,
+    ResultadosComponent,
   ],
   imports: [
     BrowserModule,
@@ -42,6 +45,7 @@ import { CommonModule } from '@angular/common';
     ArquivoEntradaService,
     SorteadorService,
     ControleDeAcaoService,
+    ResultadoEventService,
     AlgoritmoGeneticoService,
     RoletaService,
     CromossomoSorterService,
