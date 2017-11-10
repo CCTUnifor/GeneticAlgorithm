@@ -49,7 +49,7 @@ export class GeracaoComponent implements OnInit {
     private _aG: AlgoritmoGeneticoService,
     private _entrada: ArquivoEntradaService,
     private _resultadoEvent: ResultadoEventService) {
-    this._controleAcaoService.handleStartarAplicacao.subscribe((dados) => this.startar(dados));
+    this._controleAcaoService.handleStartarAplicacao.subscribe((dados) => this.iniciarSolucao(dados));
     this._controleAcaoService.handleLimparAplicacao.subscribe(() => this.limparCanvas());
   }
 
@@ -60,33 +60,38 @@ export class GeracaoComponent implements OnInit {
     this.context = canvas.getContext("2d");
   }
 
-  private async startar(dados: EntradaDados) {
+  private async iniciarSolucao(dados: EntradaDados) {
     this.dados = dados;
-    this._aG.resetar();
     await this._aG.prepararEntradaDeDados(dados);
 
-    this.geracoes();
+    await this.loop();
   }
 
-  private geracoes() {
-    this.geracao++;
-    this._aG.gerarMelhorSolucaoDaGeracao();
-    this.renderizar();
+  private resetar() {
+    this.geracao = 0;
+    this.countSemMudar = 0;
+    this.ultimoMelhorCromossomo = undefined;
+    this._aG.resetar();
+  }
 
-    this.atualizarUltimoMelhorCromossomo();
+  private loop() {
+    let interval = setInterval(() => {
+      if (this.programaAcabou)
+        clearInterval(interval);
 
-    if (this.achouMelhorSolucao) {
-      this._resultadoEvent.add(this.melhorCromossomoDaGeracao);
-      this.quantidadeDeSolucoes++;
-      if (this.programaAcabou) {
-        this._controleAcaoService.programaAcabou();
-        return;
+      if (this.achouMelhorSolucao) {
+        this._resultadoEvent.add(this.melhorCromossomoDaGeracao, this.geracao, 0);
+        this.quantidadeDeSolucoes++;
+        this.resetar();
+        this._aG.popular();
       }
 
-      this.startar(this.dados);
-    }
+      this.geracao++;
+      this._aG.gerarMelhorSolucaoDaGeracao();
 
-    setTimeout(() => this.geracoes(), 1);
+      this.atualizarUltimoMelhorCromossomo();
+      this.renderizar();
+    }, 1);
   }
 
   private atualizarUltimoMelhorCromossomo() {

@@ -1,4 +1,4 @@
-import { ResultadoEventService } from './../../services/resultado-event.service';
+import { ResultadoEventService, DadosMelhorCromossomo } from './../../services/resultado-event.service';
 import { Cromossomo } from './../../entities/cromossomo';
 import { Component, OnInit, Input } from '@angular/core';
 
@@ -8,7 +8,7 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./resultados.component.css']
 })
 export class ResultadosComponent implements OnInit {
-  private resultados: Cromossomo[] = [];
+  private resultados: DadosMelhorCromossomo[] = [];
   
   constructor(private _resultadoEvent: ResultadoEventService) {
     this._resultadoEvent.handleAdd.subscribe((x) => {

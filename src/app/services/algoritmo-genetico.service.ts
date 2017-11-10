@@ -25,13 +25,17 @@ export class AlgoritmoGeneticoService {
     public async prepararEntradaDeDados(dados: EntradaDados) {
         this.dadosEntrada = dados;
         await this._arquivoEntrada.carregarArquivo(dados.arquivo);
+        this.popular();
+    }
+
+    public popular() {
         this.populacao = this.popularCromossomos();
     }
 
     public resetar() {
         this.melhorCromossomo = undefined;
         this.cromossomoId = 1;
-        this.dadosEntrada = undefined;
+        // this.dadosEntrada = undefined;
         this.populacao = undefined;
     }
 

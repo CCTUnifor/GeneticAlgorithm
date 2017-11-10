@@ -3,7 +3,7 @@
     <legend>Resultados</legend>
     <ul>
       <li *ngFor="let resultado of resultados">
-        {{resultado.fitness}}
+        {{resultado.cromossomo.fitness}} / {{resultado.geracoes}} / {{resultado.tempo}}
       </li>
     </ul>
   </fieldset>
