@@ -1,16 +1,10 @@
-.entrada-dados{
+.resultados {
     display: inline-block;
     position: absolute;
+    top: 35%;
     width: 38%;
-
-    .row {
-        margin-bottom: 10px;
-    }
-
-    &__controle-acoes {
-        margin-bottom: 10px;
-    }
 }
+
 fieldset {
     padding: 0px 15px;
     border: 1px black solid;

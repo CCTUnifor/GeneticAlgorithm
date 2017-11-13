@@ -1,3 +1,4 @@
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { ResultadoEventService } from './../../services/resultado-event.service';
 import { AlgoritmoGeneticoService } from './../../services/algoritmo-genetico.service';
 import { EntradaDados } from './../../entities/entrada-dados';
@@ -51,6 +52,7 @@ export class GeracaoComponent implements OnInit {
     private _resultadoEvent: ResultadoEventService) {
     this._controleAcaoService.handleStartarAplicacao.subscribe((dados) => this.iniciarSolucao(dados));
     this._controleAcaoService.handleLimparAplicacao.subscribe(() => this.limparCanvas());
+    this._controleAcaoService.handleArquivoMudou.subscribe((arquivo) => this.arquivoMudou(arquivo));
   }
 
   ngOnInit(): void {
@@ -60,9 +62,16 @@ export class GeracaoComponent implements OnInit {
     this.context = canvas.getContext("2d");
   }
 
+  private async arquivoMudou(arquivo: File) {
+    let cidades = await this._aG.carregarArquivo(arquivo);
+    this._aG.setarPrimeiraSolucao(new Cromossomo(1, cidades));
+    this.renderizar();
+  }
+
   private async iniciarSolucao(dados: EntradaDados) {
     this.dados = dados;
-    await this._aG.prepararEntradaDeDados(dados);
+    await this._aG.carregarDados(dados);
+    this._aG.popular();
 
     await this.loop();
   }
@@ -76,8 +85,10 @@ export class GeracaoComponent implements OnInit {
 
   private loop() {
     let interval = setInterval(() => {
-      if (this.programaAcabou)
+      if (this.programaAcabou){
         clearInterval(interval);
+        this._controleAcaoService.programaAcabou();
+      }
 
       if (this.achouMelhorSolucao) {
         this._resultadoEvent.add(this.melhorCromossomoDaGeracao, this.geracao, 0);

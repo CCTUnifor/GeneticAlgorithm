@@ -1,36 +1,46 @@
+import { EntradaDados } from './../entities/entrada-dados';
 import { Injectable } from '@angular/core';
 
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Observable } from 'rxjs/Observable';
-import { EntradaDados } from '../entities/entrada-dados';
 
 @Injectable()
 export class ControleDeAcaoService {
-  private controleDeAcaoSource = new ReplaySubject<any>();
+  private startarAplicacaoSource = new ReplaySubject<EntradaDados>();
+  private pausarAplicacaoSource = new ReplaySubject<any>();
+  private limparAplicacaoSource = new ReplaySubject<any>();
+  private resetarAplicacaoSource = new ReplaySubject<any>();
+  private programaAcabouSource = new ReplaySubject<any>();
+  private arquivoMudouSource = new ReplaySubject<File>();
 
-  public handleStartarAplicacao: Observable<any> = this.controleDeAcaoSource.asObservable();
-  public handlePausarAplicacao: Observable<any> = this.controleDeAcaoSource.asObservable();
-  public handleLimparAplicacao: Observable<any> = this.controleDeAcaoSource.asObservable();
-  public handleResetarAplicacao: Observable<any> = this.controleDeAcaoSource.asObservable();
-  public handleProgramaAcabou: Observable<any> = this.controleDeAcaoSource.asObservable();
+  public handleStartarAplicacao: Observable<EntradaDados> = this.startarAplicacaoSource.asObservable();
+  public handlePausarAplicacao: Observable<any> = this.pausarAplicacaoSource.asObservable();
+  public handleLimparAplicacao: Observable<any> = this.limparAplicacaoSource.asObservable();
+  public handleResetarAplicacao: Observable<any> = this.resetarAplicacaoSource.asObservable();
+  public handleProgramaAcabou: Observable<any> = this.programaAcabouSource.asObservable();
+  public handleArquivoMudou: Observable<File> = this.arquivoMudouSource.asObservable();
 
   public startarAplicacao(dados: EntradaDados) {
-    this.controleDeAcaoSource.next(dados);
+    this.startarAplicacaoSource.next(dados);
   }
 
   public pausarAplicacao() {
-    this.controleDeAcaoSource.next(1);
+    this.pausarAplicacaoSource.next(1);
   }
 
   public limparAplicacao() {
-    this.controleDeAcaoSource.next(1);
+    this.limparAplicacaoSource.next(1);
   }
 
   public resetarAplicacao() {
-    this.controleDeAcaoSource.next(1);
+    this.resetarAplicacaoSource.next(1);
   }
 
   public programaAcabou() {
-    this.controleDeAcaoSource.next(1);
+    this.programaAcabouSource.next(1);
+  }
+
+  public arquivoMudou(arquivo: File) {
+    this.arquivoMudouSource.next(arquivo)
   }
 }

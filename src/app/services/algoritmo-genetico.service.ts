@@ -1,3 +1,4 @@
+import { async } from '@angular/core/testing';
 import { SelecaoNaturalRoletaServiceService } from './selecao-natural/selecao-natural-roleta-service.service';
 import { ISelecaoNatural } from './../interfaces/selecao-natural';
 import { CromossomoSorterService } from './cromossomo-sorter.service';
@@ -22,32 +23,30 @@ export class AlgoritmoGeneticoService {
         private _cromossomoSorter: CromossomoSorterService,
         private _selecaoNatural: SelecaoNaturalRoletaServiceService) { }
 
-    public async prepararEntradaDeDados(dados: EntradaDados) {
+    public async carregarDados(dados: EntradaDados) {
         this.dadosEntrada = dados;
-        await this._arquivoEntrada.carregarArquivo(dados.arquivo);
-        this.popular();
+        await this.carregarArquivo(this.dadosEntrada.arquivo);
+    }
+
+    public async carregarArquivo(arquivo: File) {
+        await this._arquivoEntrada.carregarArquivo(arquivo);
+        return this._arquivoEntrada.cidades;
     }
 
     public popular() {
-        this.populacao = this.popularCromossomos();
+        this.populacao = [];
+        for (var i = 0; i < this.dadosEntrada.tamanhoPopulacao; i++) {
+            let cidadesEmbaralhadas = this.embaralharCidades();
+            let cromossomo = new Cromossomo(this.cromossomoId++, cidadesEmbaralhadas);
+
+            this.populacao.push(cromossomo);
+        }
     }
 
     public resetar() {
         this.melhorCromossomo = undefined;
         this.cromossomoId = 1;
-        // this.dadosEntrada = undefined;
         this.populacao = undefined;
-    }
-
-    private popularCromossomos(): Array<Cromossomo> {
-        let populacao = new Array<Cromossomo>()
-        for (var i = 0; i < this.dadosEntrada.tamanhoPopulacao; i++) {
-            let cidadesEmbaralhadas = this.embaralharCidades();
-            let cromossomo = new Cromossomo(this.cromossomoId++, cidadesEmbaralhadas);
-
-            populacao.push(cromossomo);
-        }
-        return populacao;
     }
 
     private embaralharCidades(): Array<Node> {
@@ -67,6 +66,10 @@ export class AlgoritmoGeneticoService {
             if (ordinalNamers.indexOf(i) < 0)
                 debugger;
         }
+    }
+
+    public setarPrimeiraSolucao(cromossomo) {
+        this.melhorCromossomo = cromossomo;
     }
 
     public gerarMelhorSolucaoDaGeracao() {

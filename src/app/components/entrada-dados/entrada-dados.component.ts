@@ -17,6 +17,7 @@ export class EntradaDadosComponent {
   onInputChange(event) {
     let target = event.explicitOriginalTarget || event.srcElement;
     this.dados.arquivo = target.files[0];
+    this._controleAcaoService.arquivoMudou(this.dados.arquivo);;
   }
 
   startar() {

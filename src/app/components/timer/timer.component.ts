@@ -1,3 +1,4 @@
+import { ControleDeAcaoService } from './../../services/controle-de-acao.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -21,13 +22,17 @@ export class TimerComponent implements OnInit {
 
     return minutes + ":" + seconds;
   }
+  private acabou: boolean;
 
-
-  constructor() { }
+  constructor(private _acaoEvent: ControleDeAcaoService) {
+    this._acaoEvent.handleProgramaAcabou.subscribe(acabou => this.acabou = acabou);
+    this._acaoEvent.handleStartarAplicacao.subscribe(() => this.acabou = false);
+  }
 
   ngOnInit() {
     setInterval(() => {
-      this.tempo++;
+      if (!this.acabou)
+        this.tempo++;
     }, 1000);
   }
 

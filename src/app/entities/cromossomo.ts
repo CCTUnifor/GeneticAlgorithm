@@ -29,6 +29,7 @@ export class Cromossomo {
                 debugger
             _edges.push(new Edge(cidadeInicio, cidadeFim));
         }
+        _edges.push(new Edge(this._cidades[this._cidades.length - 1], this._cidades[0]));
         return _edges;
     }
 
