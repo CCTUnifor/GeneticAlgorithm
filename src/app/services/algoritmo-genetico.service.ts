@@ -68,7 +68,7 @@ export class AlgoritmoGeneticoService {
         }
     }
 
-    public setarPrimeiraSolucao(cromossomo) {
+    public setarPrimeiraSolucao(cromossomo: Cromossomo) {
         this.melhorCromossomo = cromossomo;
     }
 

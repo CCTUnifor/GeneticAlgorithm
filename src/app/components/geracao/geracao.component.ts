@@ -1,3 +1,5 @@
+import { CommonModule } from '@angular/common';
+import { TimerService } from './../../services/timer.service';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { ResultadoEventService } from './../../services/resultado-event.service';
 import { AlgoritmoGeneticoService } from './../../services/algoritmo-genetico.service';
@@ -49,7 +51,8 @@ export class GeracaoComponent implements OnInit {
     private _sorter: SorteadorService,
     private _aG: AlgoritmoGeneticoService,
     private _entrada: ArquivoEntradaService,
-    private _resultadoEvent: ResultadoEventService) {
+    private _resultadoEvent: ResultadoEventService,
+    private _timerService: TimerService) {
     this._controleAcaoService.handleStartarAplicacao.subscribe((dados) => this.iniciarSolucao(dados));
     this._controleAcaoService.handleLimparAplicacao.subscribe(() => this.limparCanvas());
     this._controleAcaoService.handleArquivoMudou.subscribe((arquivo) => this.arquivoMudou(arquivo));
@@ -80,18 +83,32 @@ export class GeracaoComponent implements OnInit {
     this.geracao = 0;
     this.countSemMudar = 0;
     this.ultimoMelhorCromossomo = undefined;
+    this._timerService.tempo = 0;
     this._aG.resetar();
   }
 
   private loop() {
     let interval = setInterval(() => {
-      if (this.programaAcabou){
+      if (this.programaAcabou) {
         clearInterval(interval);
         this._controleAcaoService.programaAcabou();
+        let melhor = this._resultadoEvent.resultados.sort((a, b) => {
+          if (a.cromossomo.fitness > b.cromossomo.fitness)
+            return 1;
+          if (a.cromossomo.fitness < b.cromossomo.fitness)
+            return -1
+          return 0;
+        })[0];
+
+        this._aG.setarPrimeiraSolucao(melhor.cromossomo);
+        this.geracao = melhor.geracoes;
+        this._timerService.tempo = melhor.time;
+        this.renderizar();
+        return;
       }
 
       if (this.achouMelhorSolucao) {
-        this._resultadoEvent.add(this.melhorCromossomoDaGeracao, this.geracao, 0);
+        this._resultadoEvent.add(this.melhorCromossomoDaGeracao, this.geracao, this._timerService.time, this._timerService.tempo);
         this.quantidadeDeSolucoes++;
         this.resetar();
         this._aG.popular();

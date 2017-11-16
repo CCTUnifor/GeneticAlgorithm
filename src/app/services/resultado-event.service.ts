@@ -7,13 +7,17 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 export class ResultadoEventService {
   private resultadoEventSource = new ReplaySubject<DadosMelhorCromossomo>();
   public handleAdd: Observable<any> = this.resultadoEventSource.asObservable();
+  public resultados: DadosMelhorCromossomo[] = [];
   
-  public add(cromossomo: Cromossomo, geracoes: number, tempo: number){
+  
+  public add(cromossomo: Cromossomo, geracoes: number, tempo: string, time: number){
     let dados: DadosMelhorCromossomo = {
       cromossomo,
       geracoes,
-      tempo
+      tempo,
+      time
     };
+    this.resultados.push(dados);
     this.resultadoEventSource.next(dados);
   }
 }
@@ -21,5 +25,6 @@ export class ResultadoEventService {
 export class DadosMelhorCromossomo {
   public cromossomo: Cromossomo;
   public geracoes: number;
-  public tempo: number;
+  public tempo: string;
+  public time: number
 }

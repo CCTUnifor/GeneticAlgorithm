@@ -1,3 +1,4 @@
+import { TimerService } from './../../services/timer.service';
 import { ControleDeAcaoService } from './../../services/controle-de-acao.service';
 import { Component, OnInit } from '@angular/core';
 
@@ -7,24 +8,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./timer.component.css']
 })
 export class TimerComponent implements OnInit {
-
-  private tempo: number = 0;
-  private get time(): string {
-    let minutes: any = Number(this.tempo / 60);
-    let seconds: any = (this.tempo % 60);
-    if (minutes < 10) {
-      minutes = "0" + minutes;
-      minutes = minutes.substr(0, 2);
-    }
-    if (seconds < 10) {
-      seconds = "0" + seconds;
-    }
-
-    return minutes + ":" + seconds;
-  }
   private acabou: boolean;
 
-  constructor(private _acaoEvent: ControleDeAcaoService) {
+  constructor(private _acaoEvent: ControleDeAcaoService, private _timerService : TimerService) {
     this._acaoEvent.handleProgramaAcabou.subscribe(acabou => this.acabou = acabou);
     this._acaoEvent.handleStartarAplicacao.subscribe(() => this.acabou = false);
   }
@@ -32,7 +18,7 @@ export class TimerComponent implements OnInit {
   ngOnInit() {
     setInterval(() => {
       if (!this.acabou)
-        this.tempo++;
+        this._timerService.tempo++;
     }, 1000);
   }
 

@@ -1,3 +1,4 @@
+import { TimerService } from './services/timer.service';
 import { ResultadoEventService } from './services/resultado-event.service';
 import { CromossomoSorterService } from './services/cromossomo-sorter.service';
 import { RoletaService } from './services/roleta.service';
@@ -47,6 +48,7 @@ import { ResultadosComponent } from './components/resultados/resultados.componen
     ControleDeAcaoService,
     ResultadoEventService,
     AlgoritmoGeneticoService,
+    TimerService,
     RoletaService,
     CromossomoSorterService,
     SelecaoNaturalRoletaServiceService,
