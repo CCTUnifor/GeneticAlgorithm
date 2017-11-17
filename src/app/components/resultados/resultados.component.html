@@ -1,0 +1,14 @@
+<div class="resultados">
+  <fieldset>
+    <legend>Resultados</legend>
+    <ol>
+      <li *ngFor="let resultado of resultados">
+        {{resultado.cromossomo.fitness}} / {{resultado.geracoes}} / {{resultado.tempo}}
+      </li>
+    </ol>
+  </fieldset>
+  <fieldset *ngIf="resultados.length > 0">
+    <legend>Média</legend>
+    {{mediaAritimetica}} - Tempo total: {{tempoTotal}}
+  </fieldset>
+</div>

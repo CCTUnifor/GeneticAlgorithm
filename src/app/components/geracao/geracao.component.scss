@@ -1,0 +1,22 @@
+.geracao {
+    display: inline-block;
+    margin: 15px;
+
+    &__titulo {
+    }
+    &__canvas {
+        border: 1px solid black;
+    }
+}
+
+.finish {
+    position: absolute;
+    display: inline;
+    top: 0px;
+    margin-left: 15px;
+    margin-top: 15px;
+    border: 1px solid;
+    padding: 15px;
+    height: 90%;
+    width: 33%;
+}

@@ -1,0 +1,17 @@
+.resultados {
+    display: inline-block;
+    position: absolute;
+    top: 35%;
+    width: 38%;
+}
+
+fieldset {
+    padding: 0px 15px;
+    border: 1px black solid;
+    border-radius: 5px;
+
+    legend {
+        width: auto;
+        padding: 0px 10px;
+    }
+}

@@ -1,0 +1,8 @@
+<div class="geracao">
+    <div *ngIf="melhorCromossomoDaGeracao" class="geracao__titulo">
+        {{titulo}} - {{fitnessLabel}} || Geracoes sem mudar o melhor: {{countSemMudar}}
+        <app-timer></app-timer>
+    </div>
+
+    <canvas #myCanvas class="geracao__canvas"></canvas>
+</div>
