@@ -1,6 +1,6 @@
 # Algorithm Genetic
 
-A Algorithm to resolve the Canadian Traveller Problem (CTP) with teory of Genetic.
+A Algorithm to resolve the Canadian Traveller Problem (CTP) based on Biology genetics.
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.4.7.
 
