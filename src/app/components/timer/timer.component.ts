@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./timer.component.css']
 })
 export class TimerComponent implements OnInit {
-  private acabou: boolean;
+  private acabou: boolean = true;
 
   constructor(private _acaoEvent: ControleDeAcaoService, private _timerService : TimerService) {
     this._acaoEvent.handleProgramaAcabou.subscribe(acabou => this.acabou = acabou);

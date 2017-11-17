@@ -72,6 +72,7 @@ export class GeracaoComponent implements OnInit {
   }
 
   private async iniciarSolucao(dados: EntradaDados) {
+    
     this.dados = dados;
     await this._aG.carregarDados(dados);
     this._aG.popular();
@@ -92,13 +93,7 @@ export class GeracaoComponent implements OnInit {
       if (this.programaAcabou) {
         clearInterval(interval);
         this._controleAcaoService.programaAcabou();
-        let melhor = this._resultadoEvent.resultados.sort((a, b) => {
-          if (a.cromossomo.fitness > b.cromossomo.fitness)
-            return 1;
-          if (a.cromossomo.fitness < b.cromossomo.fitness)
-            return -1
-          return 0;
-        })[0];
+        let melhor = this._resultadoEvent.melhorResultado;;
 
         this._aG.setarPrimeiraSolucao(melhor.cromossomo);
         this.geracao = melhor.geracoes;
@@ -108,10 +103,11 @@ export class GeracaoComponent implements OnInit {
       }
 
       if (this.achouMelhorSolucao) {
-        this._resultadoEvent.add(this.melhorCromossomoDaGeracao, this.geracao, this._timerService.time, this._timerService.tempo);
+        this._resultadoEvent.add(this.melhorCromossomoDaGeracao, this.geracao, this._timerService.time, this._timerService.tempo, this.quantidadeDeSolucoes);
         this.quantidadeDeSolucoes++;
         this.resetar();
         this._aG.popular();
+        this._resultadoEvent.melhorResultado;
       }
 
       this.geracao++;
