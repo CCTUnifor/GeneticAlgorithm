@@ -1,4 +1,6 @@
-# AlgoritmoGenetico
+# Algorithm Genetic
+
+A Algorithm to resolve the Canadian Traveller Problem (CTP) with teory of Genetic.
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.4.7.
 
