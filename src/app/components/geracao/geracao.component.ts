@@ -72,7 +72,7 @@ export class GeracaoComponent implements OnInit {
   }
 
   private async iniciarSolucao(dados: EntradaDados) {
-    
+
     this.dados = dados;
     await this._aG.carregarDados(dados);
     this._aG.popular();
@@ -135,7 +135,7 @@ export class GeracaoComponent implements OnInit {
   }
 
   private get programaAcabou() {
-    return this.quantidadeDeSolucoes >= 10;
+    return this.quantidadeDeSolucoes >= 1;
   }
 
   renderizar(): void {
@@ -157,17 +157,46 @@ export class GeracaoComponent implements OnInit {
     if (!this.melhorCromossomoDaGeracao)
       return;
 
+    var maxX = this._entrada.cidades.map(x => x.coordenada.x).reduce((prev, curr) => {
+      return Math.max(prev, curr)
+    });
+    var minX = this._entrada.cidades.map(x => x.coordenada.x).reduce((prev, curr) => {
+      return Math.min(prev, curr)
+    });
+
+    var maxY = this._entrada.cidades.map(x => x.coordenada.y).reduce((prev, curr) => {
+      return Math.max(prev, curr)
+    });
+    var minY = this._entrada.cidades.map(x => x.coordenada.y).reduce((prev, curr) => {
+      return Math.min(prev, curr)
+    });
+
     this._entrada.cidades.forEach(cidade => {
-      this.drawable.drawNode(cidade);
+      this.drawable.drawNode(maxX, minX, maxY, minY, cidade);
     });
   }
 
   drawCaminhos() {
     if (!this.melhorCromossomoDaGeracao)
       return;
+
+    var maxX = this._entrada.cidades.map(x => x.coordenada.x).reduce((prev, curr) => {
+      return Math.max(prev, curr)
+    });
+    var minX = this._entrada.cidades.map(x => x.coordenada.x).reduce((prev, curr) => {
+      return Math.min(prev, curr)
+    });
+
+    var maxY = this._entrada.cidades.map(x => x.coordenada.y).reduce((prev, curr) => {
+      return Math.max(prev, curr)
+    });
+    var minY = this._entrada.cidades.map(x => x.coordenada.y).reduce((prev, curr) => {
+      return Math.min(prev, curr)
+    });
+
     for (var i = 0; i < this.melhorCromossomoDaGeracao.edges.length; i++) {
       let caminho = this.melhorCromossomoDaGeracao.edges[i];
-      this.drawable.drawEdge(caminho);
+      this.drawable.drawEdge(maxX, minX, maxY, minY, caminho);
     }
   }
 }
